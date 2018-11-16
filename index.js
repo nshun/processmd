@@ -22,7 +22,7 @@ const FRONTMATTER_SEPERATOR = '---'
 const SOURCE_MODE = 'source'
 
 // Main function
-function processmd (options, callback) {
+function processmd(options, callback) {
   options = Object.assign({}, defaultOptions, options)
 
   const markdownIt = MarkdownIt(options.markdownOptions)
@@ -35,10 +35,12 @@ function processmd (options, callback) {
     markdownIt.use(markdownItHighlight)
   }
   if (options.headingIds) {
-    markdownIt.use(require('markdown-it-named-headings'))
+    markdownIt.use(require('markdown-it-github-toc'))
   }
 
-  options.markdownRenderer = options.markdownRenderer || function mdRender (str) { return markdownIt.render(str) }
+  options.markdownRenderer = options.markdownRenderer || function mdRender(str) {
+    return markdownIt.render(str)
+  }
 
   const globs = (options.files || []).concat(options._ || [])
   if (globs.length === 0) {
@@ -61,7 +63,9 @@ function processmd (options, callback) {
 
         // fs.watch isn't supported on linux.
         try {
-          fs.watch(commonDir, { recursive: true }, function (event, filename) {
+          fs.watch(commonDir, {
+            recursive: true
+          }, function (event, filename) {
             d()
           })
         } catch (e) {
@@ -76,7 +80,7 @@ function processmd (options, callback) {
         processingFunc = processJson
       }
 
-      function processOutput () {
+      function processOutput() {
         const summaryObj = {}
         summaryObj.fileMap = {}
         // Case insensitive array to stay backwards compatible for now.
@@ -96,9 +100,9 @@ function processmd (options, callback) {
               content = removeBodyProps(content)
             }
 
-            summaryObj.fileMap[filename] = options.convertMode === SOURCE_MODE
-              ? content
-              : JSON.parse(content)
+            summaryObj.fileMap[filename] = options.convertMode === SOURCE_MODE ?
+              content :
+              JSON.parse(content)
 
             if (finishCount === result.length) {
               if (options.summaryOutput) {
@@ -127,7 +131,7 @@ function processmd (options, callback) {
   return p
 }
 
-function processYamlAndMarkdown (file, options, cb) {
+function processYamlAndMarkdown(file, options, cb) {
   readFileContent(file, (err, file, fileContent) => {
     if (err) throw (err)
     const hasFrontmatter = fileContent.indexOf(FRONTMATTER_SEPERATOR) === 0
@@ -207,7 +211,7 @@ function processYamlAndMarkdown (file, options, cb) {
   })
 }
 
-function processJson (file, options, cb) {
+function processJson(file, options, cb) {
   readFileContent(file, (err, file, fileContent) => {
     if (err) throw (err)
     const fileData = JSON.parse(fileContent)
@@ -251,7 +255,7 @@ function processJson (file, options, cb) {
   })
 }
 
-function cleanFileProps (obj) {
+function cleanFileProps(obj) {
   delete obj.dir
   delete obj.base
   delete obj.ext
@@ -260,7 +264,7 @@ function cleanFileProps (obj) {
   return obj
 }
 
-function cleanMarkdownProps (obj) {
+function cleanMarkdownProps(obj) {
   delete obj.bodyContent
   delete obj.bodyHtml
   delete obj.preview
@@ -269,7 +273,7 @@ function cleanMarkdownProps (obj) {
 }
 
 // Read a file making sure that it is not a directory first.
-function readFileContent (file, cb) {
+function readFileContent(file, cb) {
   if (!file || fs.lstatSync(file).isDirectory()) {
     return null
   }
@@ -279,7 +283,7 @@ function readFileContent (file, cb) {
 }
 
 // Write a file making sure the directory exists first.
-function writeFileContent (file, content, cb) {
+function writeFileContent(file, content, cb) {
   mkdirp(path.dirname(file), function (err) {
     if (err) throw (err)
     fs.writeFile(file, content, (e, data) => {
@@ -289,17 +293,17 @@ function writeFileContent (file, content, cb) {
 }
 
 // Replace backslashes for windows paths.
-function replaceBackslashes (str) {
+function replaceBackslashes(str) {
   return str.split('\\').join('/')
 }
 
 // Determine if its data for a markdown file.
-function isMarkdown (data) {
+function isMarkdown(data) {
   return Boolean(data.bodyContent && data.bodyHtml)
 }
 
 // Find the common parent directory given an array of files.
-function findCommonDir (files) {
+function findCommonDir(files) {
   const path = files.reduce((path, file, fileIndex) => {
     // If it's a file not in any directory then just skip it
     // by assigning the previous value.
@@ -339,17 +343,17 @@ function findCommonDir (files) {
 }
 
 // Remove body props from summary.
-function removeBodyProps (content) {
+function removeBodyProps(content) {
   try {
     const json = JSON.parse(content)
     delete json.bodyContent
     delete json.bodyHtml
     return JSON.stringify(json)
-  } catch (e) { }
+  } catch (e) {}
 }
 
 // Debounce from: https://davidwalsh.name/function-debounce
-function debounce (func, wait, immediate) {
+function debounce(func, wait, immediate) {
   var timeout
   return function () {
     var context = this
