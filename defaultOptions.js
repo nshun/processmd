@@ -41,5 +41,5 @@ module.exports = {
   // See here for options: https://github.com/markdown-it/markdown-it#init-with-presets-and-options
   markdownOptions: {},
   // Include generated ids on headings.
-  headingIds: false
+  headingIds: true
 }

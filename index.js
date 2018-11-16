@@ -6,6 +6,7 @@ const globby = require('globby')
 const MarkdownIt = require('markdown-it')
 const markdownItLatex = require('markdown-it-latex').default
 const markdownItHighlight = require('markdown-it-highlight').default
+const markdownItGithubToc = require('markdown-it-github-toc').default
 const yaml = require('js-yaml')
 const mkdirp = require('mkdirp')
 const removeMd = require('remove-markdown')
@@ -35,7 +36,7 @@ function processmd(options, callback) {
     markdownIt.use(markdownItHighlight)
   }
   if (options.headingIds) {
-    markdownIt.use(require('markdown-it-github-toc'))
+    markdownIt.use(markdownItGithubToc)
   }
 
   options.markdownRenderer = options.markdownRenderer || function mdRender(str) {
